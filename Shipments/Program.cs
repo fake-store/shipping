@@ -6,9 +6,10 @@ using Shipments.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // JWT auth
-var jwtSecret = builder.Configuration["Jwt:Secret"]
-    ?? Environment.GetEnvironmentVariable("JWT_SECRET")
-    ?? throw new InvalidOperationException("JWT_SECRET is required");
+var jwtSecret = builder.Configuration["Jwt:Secret"] is { Length: > 0 } s
+    ? s
+    : Environment.GetEnvironmentVariable("JWT_SECRET")
+      ?? throw new InvalidOperationException("JWT_SECRET is required");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
