@@ -14,6 +14,7 @@ var jwtSecret = builder.Configuration["Jwt:Secret"] is { Length: > 0 } s
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
