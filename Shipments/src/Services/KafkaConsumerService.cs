@@ -1,24 +1,25 @@
 using System.Text.Json;
 using Confluent.Kafka;
 using Shipments.Dto;
+using Shipments.Repositories;
 
 namespace Shipments.Services;
 
 public class KafkaConsumerService : BackgroundService
 {
     private readonly IConfiguration _config;
-    private readonly AddressService _addressService;
+    private readonly IAddressRepository _addresses;
     private readonly KafkaProducerService _producer;
     private readonly ILogger<KafkaConsumerService> _logger;
 
     public KafkaConsumerService(
         IConfiguration config,
-        AddressService addressService,
+        IAddressRepository addresses,
         KafkaProducerService producer,
         ILogger<KafkaConsumerService> logger)
     {
         _config = config;
-        _addressService = addressService;
+        _addresses = addresses;
         _producer = producer;
         _logger = logger;
     }
@@ -76,7 +77,7 @@ public class KafkaConsumerService : BackgroundService
     private void HandleShipment(ShippingAuthorizedMessage msg)
     {
         var address = Guid.TryParse(msg.ShippingAddressId, out var addrId)
-            ? _addressService.GetByAddressId(addrId)
+            ? _addresses.GetById(addrId)
             : null;
 
         var addressLine = address is not null
