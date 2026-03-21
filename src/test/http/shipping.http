@@ -1,0 +1,61 @@
+### meant to be used with VS Code Http Client
+@host = http://localhost:8084
+
+### Login via users service to get a token first
+# @name login
+POST http://localhost:8081/api/users/login
+Content-Type: application/json
+
+{
+  "email": "{{fakestore_user_email}}",
+  "password": "{{fakestore_user_password}}"
+}
+
+###
+
+@token = {{login.response.body.token}}
+
+### Get all shipping addresses
+GET {{host}}/api/shipping/addresses
+Authorization: Bearer {{token}}
+
+###
+
+### Add a shipping address
+# @name addAddress
+POST {{host}}/api/shipping/addresses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "label": "Home",
+  "street": "123 Main St",
+  "city": "Springfield",
+  "state": "IL",
+  "postalCode": "62701",
+  "country": "US"
+}
+
+###
+
+@addressId = {{addAddress.response.body.id}}
+
+### Update a shipping address
+PUT {{host}}/api/shipping/addresses/{{addressId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "label": "Home (updated)",
+  "street": "456 Elm St",
+  "city": "Springfield",
+  "state": "IL",
+  "postalCode": "62702",
+  "country": "US"
+}
+
+###
+
+### Delete a shipping address
+DELETE {{host}}/api/shipping/addresses/{{addressId}}
+Authorization: Bearer {{token}}
